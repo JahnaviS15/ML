@@ -1,37 +1,34 @@
-# import required libraries 
-import pandas as pd 
-import seaborn as sns 
-import matplotlib.pyplot as plt 
-from sklearn.datasets import fetch_california_housing 
-
-def main():
-    try:
-        # Load the California Housing dataset 
-        california_housing = fetch_california_housing() 
-        data = pd.DataFrame(california_housing.data, columns=california_housing.feature_names) 
-        
-        # Compute the correlation matrix 
-        corr_matrix = data.corr() 
-        print("\nCorrelation Matrix:")
-        print(corr_matrix) 
-        
-        # Visualize the correlation matrix using a heatmap 
-        plt.figure(figsize=(8, 6)) 
-        sns.heatmap(corr_matrix, annot=True, cmap='crest', fmt='.2f') 
-        plt.title('Correlation Matrix Heatmap') 
-        plt.tight_layout()
-        plt.show() 
-        plt.close()
-        
-        # Create a pair plot to visualize pairwise relationships between features 
-        plt.figure() 
-        sns.pairplot(data, kind='scatter', diag_kind='kde', plot_kws={'alpha': 0.5}) 
-        plt.show() 
-        plt.close()
-        
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-
-if __name__ == "__main__":
-    main() 
-
+# Importing required libraries
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+# Load the Iris dataset
+iris = load_iris()
+X = iris.data # Features
+y = iris.target # Target labels
+label_names = iris.target_names
+# Create a DataFrame
+df = pd.DataFrame(X, columns=iris.feature_names)
+# Apply PCA to reduce dimensionality from 4 to 2
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(X)
+# Create a DataFrame with the principal components
+df_pca = pd.DataFrame(data=principal_components,
+columns=['Principal Component 1', 'Principal Component 2'])
+df_pca['Target'] = y
+# Visualize the result
+plt.figure(figsize=(6, 4))
+colors = ['y', 'b', 'g']
+for i, label in enumerate(np.unique(y)):
+plt.scatter(df_pca[df_pca['Target'] == label]['Principal Component 1'],
+df_pca[df_pca['Target'] == label]['Principal Component 2'],
+label=label_names[label],
+color=colors[i])
+plt.title('PCA of Iris Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.legend()
+plt.savefig('pcaofirisdataset.png')
+plt.show()
